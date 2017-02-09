@@ -64,16 +64,32 @@ describe('routes : auth', () => {
 
   describe('GET /auth/logout', () => {
     it('should logout a user', (done) => {
-      chai.request(server)
-      .get('/auth/logout')
-      .end((err, res) => {
-        should.not.exist(err);
-        res.redirects.length.should.eql(0);
-        res.status.should.eql(200);
-        res.type.should.eql('application/json');
-        res.body.status.should.eql('success');
-        done();
+      passportStub.login({
+        username: 'jeremy',
+        password: 'johnson123'
       });
+      chai.request(server)
+        .get('/auth/logout')
+        .end((err, res) => {
+          should.not.exist(err);
+          res.redirects.length.should.eql(0);
+          res.status.should.eql(200);
+          res.type.should.eql('application/json');
+          res.body.status.should.eql('success');
+          done();
+        });
+    });
+    it('should throw an error if a user is not logged in', (done) => {
+      chai.request(server)
+        .get('/auth/logout')
+        .end((err, res) => {
+          should.exist(err);
+          res.redirects.length.should.eql(0);
+          res.status.should.eql(401);
+          res.type.should.eql('application/json');
+          res.body.status.should.eql('Please log in');
+          done();
+        });
     });
   });
 

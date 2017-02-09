@@ -27,7 +27,7 @@ router.post('/login', (req, res, next) => {
   })(req, res, next);
 });
 
-router.get('/logout', (req, res, next) => {
+router.get('/logout', authHelpers.loginRequired, (req, res, next) => {
   req.logout();
   handleResponse(res, 200, 'success');
 });

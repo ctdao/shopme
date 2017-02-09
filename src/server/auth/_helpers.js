@@ -39,7 +39,13 @@ function handleErrors(req) {
   });
 }
 
+function loginRequired(req, res, next) {
+  if (!req.user) return res.status(401).json({status: 'Please log in'});
+  return next();
+}
+
 module.exports = {
   comparePass,
-  createUser
+  createUser,
+  loginRequired
 };
