@@ -61,4 +61,20 @@ describe('routes : auth', () => {
       });
     });
   });
+
+  describe('GET /auth/logout', () => {
+    it('should logout a user', (done) => {
+      chai.request(server)
+      .get('/auth/logout')
+      .end((err, res) => {
+        should.not.exist(err);
+        res.redirects.length.should.eql(0);
+        res.status.should.eql(200);
+        res.type.should.eql('application/json');
+        res.body.status.should.eql('success');
+        done();
+      });
+    });
+  });
+
 });

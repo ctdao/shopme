@@ -27,6 +27,11 @@ router.post('/login', (req, res, next) => {
   })(req, res, next);
 });
 
+router.get('/logout', (req, res, next) => {
+  req.logout();
+  handleResponse(res, 200, 'success');
+});
+
 function handleResponse(res, code, statusMsg) {
   res.status(code).json({status: statusMsg});
 }
