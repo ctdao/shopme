@@ -22,23 +22,6 @@ function createUser (req, res) {
   });
 }
 
-function handleErrors(req) {
-  return new Promise((resolve, reject) => {
-    if (req.body.username.length < 6) {
-      reject({
-        message: 'Username must be longer than 6 characters'
-      });
-    }
-    else if (req.body.password.length < 6) {
-      reject({
-        message: 'Password must be longer than 6 characters'
-      });
-    } else {
-      resolve();
-    }
-  });
-}
-
 function loginRequired(req, res, next) {
   if (!req.user) return res.status(401).json({status: 'Please log in'});
   return next();
@@ -56,9 +39,33 @@ function adminRequired(req, res, next) {
     });
 }
 
+function loginRedirect(req, res, next) {
+  if (req.user) return res.status(401).json(
+    {status: 'You are already logged in'});
+  return next();
+}
+
+function handleErrors(req) {
+  return new Promise((resolve, reject) => {
+    if (req.body.username.length < 6) {
+      reject({
+        message: 'Username must be longer than 6 characters'
+      });
+    }
+    else if (req.body.password.length < 6) {
+      reject({
+        message: 'Password must be longer than 6 characters'
+      });
+    } else {
+      resolve();
+    }
+  });
+}
+
 module.exports = {
   comparePass,
   createUser,
   loginRequired,
-  adminRequired
+  adminRequired,
+  loginRedirect
 };
