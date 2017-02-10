@@ -1,0 +1,2 @@
+CREATE DATABASE shopme;
+CREATE DATABASE shopme_test;
