@@ -1,0 +1,60 @@
+app:
+  build: ../../
+  dockerfile: docker/release/Dockerfile
+  volumes_from:
+    - webroot
+  links:
+    - db
+  expose:
+    - "3000"
+  environment:
+    POSTGRES_HOST: db
+    POSTGRES_PORT: 5432
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: postgres
+  entrypoint: |
+    bash -c 'bash -s <<EOF
+      cp -r /node_modules/ShopMe/* /app
+      cd /app
+      node_modules/.bin/knex migrate:latest --env development
+      echo 'NODE_ENV=development' >> .env
+      echo 'SECRET_KEY=changeme' >> .env
+      npm start
+    EOF'  
+
+nginx:
+  build: .
+  dockerfile: Dockerfile.nginx
+  links:
+    - app
+  ports:
+    - "8000:8000"
+  volumes_from:
+    - webroot
+
+webroot:
+  build: ../../
+  dockerfile: docker/release/Dockerfile
+  volumes:
+    - /var/www/shopme
+  entrypoint: "true"
+
+agent:
+  image: ctdao/ansible
+  links:
+    - db
+  environment:
+    PROBE_HOST: "db"
+    PROBE_PORT: "5432"
+  command: ["probe.yml"]
+
+db:
+  image: postgres:9.6
+  hostname: db
+  volumes:
+    - ../../scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+  expose:
+    - "5432"
+  environment:
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: postgres

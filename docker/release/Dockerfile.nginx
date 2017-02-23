@@ -1,0 +1,5 @@
+FROM nginx
+MAINTAINER Truc C. Dao <truc.c.dao@gmail.com>
+
+# Copy todobackend nginx configuration file
+COPY shopme.conf /etc/nginx/conf.d/shopme.conf
